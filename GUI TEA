@@ -1,0 +1,204 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Function to simulate RULA assessment (Upper Limb)
+def rula(upper_arm_angle, lower_arm_angle, wrist_angle, neck_angle, trunk_angle, force):
+    # Upper arm posture scoring
+    if upper_arm_angle >= 60:
+        upper_arm_score = 1
+    elif 30 <= upper_arm_angle < 60:
+        upper_arm_score = 2
+    elif 0 <= upper_arm_angle < 30:
+        upper_arm_score = 3
+    else:
+        upper_arm_score = 4
+
+    # Lower arm posture scoring
+    if lower_arm_angle >= 90:
+        lower_arm_score = 1
+    elif 45 <= lower_arm_angle < 90:
+        lower_arm_score = 2
+    elif 0 <= lower_arm_angle < 45:
+        lower_arm_score = 3
+    else:
+        lower_arm_score = 4
+
+    # Wrist position scoring
+    if wrist_angle == 0:  # Neutral wrist
+        wrist_score = 1
+    elif 0 < wrist_angle <= 30:
+        wrist_score = 2
+    elif 30 < wrist_angle <= 60:
+        wrist_score = 3
+    else:
+        wrist_score = 4
+
+    # Neck and trunk posture scoring
+    if neck_angle <= 15 and trunk_angle <= 15:  # Neutral neck and trunk
+        neck_trunk_score = 1
+    elif 15 < neck_angle <= 30 or 15 < trunk_angle <= 30:
+        neck_trunk_score = 2
+    elif 30 < neck_angle <= 45 or 30 < trunk_angle <= 45:
+        neck_trunk_score = 3
+    else:
+        neck_trunk_score = 4
+
+    # Force level scoring
+    if force == 'Low':
+        force_score = 1
+    elif force == 'Medium':
+        force_score = 2
+    else:
+        force_score = 3
+
+    # Combine all scores
+    score = upper_arm_score + lower_arm_score + wrist_score + neck_trunk_score + force_score
+
+    # Risk level based on RULA score
+    if score <= 3:
+        risk = "Low Risk"
+    elif 4 <= score <= 5:
+        risk = "Medium Risk"
+    elif 6 <= score <= 7:
+        risk = "High Risk"
+    else:
+        risk = "Very High Risk"
+    
+    return score, risk
+
+# Function to simulate REBA assessment (Whole Body)
+def reba(neck_angle, trunk_angle, lower_back_angle, arm_angle, wrist_angle, force, repetitiveness):
+    # Body posture scoring (neck, trunk, lower back)
+    if neck_angle <= 15 and trunk_angle <= 15 and lower_back_angle <= 15:
+        body_posture_score = 1
+    elif 15 < neck_angle <= 30 or 15 < trunk_angle <= 30 or 15 < lower_back_angle <= 30:
+        body_posture_score = 2
+    elif 30 < neck_angle <= 45 or 30 < trunk_angle <= 45 or 30 < lower_back_angle <= 45:
+        body_posture_score = 3
+    else:
+        body_posture_score = 4
+
+    # Arm and wrist posture scoring
+    if arm_angle >= 60 and arm_angle <= 90 and wrist_angle <= 30:
+        arm_score = 1
+    elif 30 <= arm_angle < 60 or 30 <= wrist_angle <= 45:
+        arm_score = 2
+    else:
+        arm_score = 3
+
+    # Force and repetitiveness scoring
+    if force == 'Low' and repetitiveness == 'Infrequent':
+        force_repetitive_score = 1
+    elif force == 'Medium' or repetitiveness == 'Occasional':
+        force_repetitive_score = 2
+    else:
+        force_repetitive_score = 3
+
+    # Combine all scores
+    score = body_posture_score + arm_score + force_repetitive_score
+
+    # Risk level based on REBA score
+    if score <= 2:
+        risk = "Low Risk"
+    elif 3 <= score <= 4:
+        risk = "Medium Risk"
+    elif 5 <= score <= 6:
+        risk = "High Risk"
+    else:
+        risk = "Very High Risk"
+    
+    return score, risk
+
+# Function to provide ergonomic interventions based on risk levels
+def ergonomic_interventions(rula_risk, reba_risk):
+    interventions = []
+    
+    if rula_risk in ["High Risk", "Very High Risk"]:
+        interventions.append("Posture adjustment: Reduce arm angles, avoid wrist flexion.")
+        interventions.append("Adjust work height: Ensure work surface is at waist level to avoid bending.")
+        interventions.append("Ergonomic tools: Use tools with padded handles or adjustable lengths.")
+        interventions.append("Frequent breaks: Rest every 30 minutes to avoid muscle fatigue.")
+    
+    if reba_risk in ["High Risk", "Very High Risk"]:
+        interventions.append("Lifting aids: Use carts or hoists for heavy loads to avoid strain.")
+        interventions.append("Job rotation: Rotate tasks every 2 hours to reduce repetitive movements.")
+        interventions.append("Training: Teach proper lifting techniques and ergonomically correct posture.")
+        interventions.append("Environmental adjustment: Provide adjustable stools or seating for sitting tasks.")
+    
+    if len(interventions) == 0:
+        interventions.append("No immediate ergonomic interventions are needed. Continue monitoring posture.")
+    
+    return interventions
+
+# Tkinter setup for GUI
+def display_gui():
+    # Create the main window
+    window = tk.Tk()
+    window.title("Tea Plantation Worker Ergonomics Assessment")
+
+    # Create entry labels and fields
+    tk.Label(window, text="Upper Arm Angle (degrees):").grid(row=0, column=0)
+    upper_arm_entry = tk.Entry(window)
+    upper_arm_entry.grid(row=0, column=1)
+
+    tk.Label(window, text="Lower Arm Angle (degrees):").grid(row=1, column=0)
+    lower_arm_entry = tk.Entry(window)
+    lower_arm_entry.grid(row=1, column=1)
+
+    tk.Label(window, text="Wrist Angle (degrees):").grid(row=2, column=0)
+    wrist_entry = tk.Entry(window)
+    wrist_entry.grid(row=2, column=1)
+
+    tk.Label(window, text="Neck Angle (degrees):").grid(row=3, column=0)
+    neck_entry = tk.Entry(window)
+    neck_entry.grid(row=3, column=1)
+
+    tk.Label(window, text="Trunk Angle (degrees):").grid(row=4, column=0)
+    trunk_entry = tk.Entry(window)
+    trunk_entry.grid(row=4, column=1)
+
+    tk.Label(window, text="Force Level (Low, Medium, High):").grid(row=5, column=0)
+    force_entry = tk.Entry(window)
+    force_entry.grid(row=5, column=1)
+
+    tk.Label(window, text="Repetitiveness (Infrequent, Occasional, Frequent):").grid(row=6, column=0)
+    repetitiveness_entry = tk.Entry(window)
+    repetitiveness_entry.grid(row=6, column=1)
+
+    # Function to handle calculation and display results
+    def calculate_results():
+        try:
+            upper_arm = float(upper_arm_entry.get())
+            lower_arm = float(lower_arm_entry.get())
+            wrist = float(wrist_entry.get())
+            neck = float(neck_entry.get())
+            trunk = float(trunk_entry.get())
+            force = force_entry.get()
+            repetitiveness = repetitiveness_entry.get()
+
+            # Get RULA and REBA scores
+            rula_score, rula_risk = rula(upper_arm, lower_arm, wrist, neck, trunk, force)
+            reba_score, reba_risk = reba(neck, trunk, 15, upper_arm, wrist, force, repetitiveness)
+
+            # Get interventions
+            interventions = ergonomic_interventions(rula_risk, reba_risk)
+
+            # Display the results
+            result_message = f"RULA Score: {rula_score} ({rula_risk})\n"
+            result_message += f"REBA Score: {reba_score} ({reba_risk})\n"
+            result_message += "\nRecommended Ergonomic Interventions:\n" + "\n".join(interventions)
+
+            messagebox.showinfo("Ergonomics Assessment Result", result_message)
+
+        except ValueError:
+            messagebox.showerror("Input Error", "Please enter valid numbers for all fields.")
+
+    # Create Calculate button
+    calculate_button = tk.Button(window, text="Calculate", command=calculate_results)
+    calculate_button.grid(row=7, column=0, columnspan=2)
+
+    # Run the GUI
+    window.mainloop()
+
+# Run the GUI display
+display_gui()
